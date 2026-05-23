@@ -13,8 +13,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://cvforge-resume.vercel.app",
+  ),
   title: "CVForge | Premium CV Builder",
   description: "Create optimized bilingual resumes and CVs with guided onboarding, scoring, templates, and Supabase-backed storage.",
+  applicationName: "CVForge",
+  openGraph: {
+    title: "CVForge | Premium CV Builder",
+    description:
+      "Create optimized bilingual resumes and CVs with guided onboarding, scoring, templates, and Supabase-backed storage.",
+    siteName: "CVForge",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
