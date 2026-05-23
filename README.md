@@ -4,6 +4,10 @@ CVForge is a production-oriented MVP for building optimized resumes and CVs. It 
 
 Production demo: https://curriculum-app-alpha.vercel.app
 
+GitHub repository: https://github.com/D4ND3R/cvforge
+
+Supabase project ref: `jnsnhtdhcsdzcqqmtdin`
+
 ## Features
 
 - Email/password authentication with Supabase SSR cookies and protected routes.
@@ -18,7 +22,7 @@ Production demo: https://curriculum-app-alpha.vercel.app
 
 ## Tech Stack
 
-Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Supabase Auth/Postgres/Storage/RLS, `@supabase/ssr`, React Hook Form-ready dependencies, Zod, Framer Motion, lucide-react, Sonner, and Vercel.
+Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Supabase Auth/Postgres/Storage/RLS, `@supabase/ssr`, React Hook Form, Zod, Framer Motion, lucide-react, Sonner, and Vercel.
 
 ## Local Setup
 
@@ -45,7 +49,7 @@ Only `NEXT_PUBLIC_*` values are exposed to the browser. Keep `OPENAI_API_KEY` se
 ## Supabase Setup
 
 1. Create or select a Supabase project.
-2. Run `supabase/migrations/202605220001_initial_schema.sql` in the SQL editor or with the Supabase CLI.
+2. Run all SQL files in `supabase/migrations` in filename order using the SQL editor or Supabase CLI.
 3. Enable Email/Password auth in Supabase Auth.
 4. Optional Google OAuth: configure the Google provider and set the callback URL to `<APP_URL>/auth/callback`.
 5. Confirm the `profile-photos` storage bucket exists after running the migration.
@@ -65,6 +69,8 @@ The migration creates:
 
 Every user-owned table has RLS enabled and policies that restrict select/insert/update/delete to `auth.uid()`. Storage policies restrict writes to a user-owned folder prefix.
 
+The included production Supabase project has the schema applied and has no security advisor warnings at handoff.
+
 ## Vercel Deployment
 
 1. Push this repo to GitHub.
@@ -73,7 +79,7 @@ Every user-owned table has RLS enabled and policies that restrict select/insert/
 4. Set `NEXT_PUBLIC_APP_URL` to the Vercel production URL.
 5. Deploy.
 
-The app builds without Supabase variables for preview purposes, but authentication and persistence require Supabase env vars at runtime.
+The Vercel production project has the Supabase public URL, publishable key, and app URL configured.
 
 ## Usage
 
@@ -87,8 +93,8 @@ The app builds without Supabase variables for preview purposes, but authenticati
 
 - PDF export uses browser print/save as PDF fallback instead of server-side PDF rendering.
 - AI optimization uses OpenAI chat completions when `OPENAI_API_KEY` exists; otherwise deterministic rewriting is used.
-- Section drag-and-drop reordering is represented by sort order and inclusion toggles, but full drag UI is a future enhancement.
-- Hosted Supabase project provisioning and Vercel deployment require account credentials and cost confirmation outside this local build.
+- Section reordering uses up/down controls instead of drag-and-drop.
+- Supabase email confirmation is controlled in the Supabase dashboard; if confirmations are enabled, users must confirm email before login.
 
 ## Future Improvements
 
@@ -96,4 +102,4 @@ The app builds without Supabase variables for preview purposes, but authenticati
 - Full drag-and-drop section and entry ordering.
 - Rich manual editing for generated bullets.
 - More templates and target-specific CV examples.
-- Account deletion flow with explicit confirmation.
+- Full auth-user deletion flow through a server-side admin endpoint.
