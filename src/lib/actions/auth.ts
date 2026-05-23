@@ -39,6 +39,7 @@ export async function signUpAction(_: unknown, formData: FormData) {
   }
 
   revalidatePath("/", "layout");
+  if (!data.session) redirect("/login?notice=confirm-email");
   redirect("/onboarding");
 }
 
