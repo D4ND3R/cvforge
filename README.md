@@ -69,7 +69,7 @@ The migration creates:
 
 Every user-owned table has RLS enabled and policies that restrict select/insert/update/delete to `auth.uid()`. Storage policies restrict writes to a user-owned folder prefix.
 
-The included production Supabase project has the schema applied and has no security advisor warnings at handoff.
+The included production Supabase project has the schema applied and no schema/RLS security warnings at handoff.
 
 ## Vercel Deployment
 
@@ -95,6 +95,7 @@ The Vercel production project has the Supabase public URL, publishable key, and 
 - AI optimization uses OpenAI chat completions when `OPENAI_API_KEY` exists; otherwise deterministic rewriting is used.
 - Section reordering uses up/down controls instead of drag-and-drop.
 - Supabase email confirmation is controlled in the Supabase dashboard; if confirmations are enabled, users must confirm email before login.
+- Supabase currently reports leaked-password protection as disabled; enable it in the Auth dashboard for stronger production security.
 
 ## Future Improvements
 
