@@ -2,6 +2,8 @@
 
 CVForge is a production-oriented MVP for building optimized resumes and CVs. It is a mobile-first Next.js App Router application with Supabase Auth, Supabase Postgres, Supabase Storage, bilingual English/Spanish UI, bilingual CV output, guided onboarding, detailed CV section forms, quality scoring, deterministic optimization, optional OpenAI-compatible optimization, three CV templates, and print/PDF export.
 
+Production demo: https://curriculum-app-alpha.vercel.app
+
 ## Features
 
 - Email/password authentication with Supabase SSR cookies and protected routes.
