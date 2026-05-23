@@ -1,16 +1,14 @@
 import Link from "next/link";
 import { CalendarDays, Copy, FilePlus2, Pencil, Trash2 } from "lucide-react";
 import { AppNav } from "@/components/layout/AppChrome";
+import { CreateCvForm } from "@/components/dashboard/CreateCvForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getDictionary } from "@/lib/i18n/server";
 import { requireUser } from "@/lib/auth";
-import { createCvAction, deleteCvAction, duplicateCvAction } from "@/lib/actions/cv";
+import { deleteCvAction, duplicateCvAction } from "@/lib/actions/cv";
 import type { CVVersion } from "@/lib/cv/types";
 
 export const dynamic = "force-dynamic";
@@ -46,13 +44,7 @@ export default async function DashboardPage() {
             <Card className="border-white/70 bg-white/85 shadow-xl">
               <CardHeader><CardTitle className="flex items-center gap-2"><FilePlus2 className="size-5" />{dictionary.dashboard.create}</CardTitle></CardHeader>
               <CardContent>
-                <form action={createCvAction} className="grid gap-3 md:grid-cols-4">
-                  <div className="space-y-2 md:col-span-2"><Label>CV title</Label><Input name="title" placeholder="Scholarship CV" required /></div>
-                  <div className="space-y-2"><Label>{dictionary.builder.language}</Label><Select name="output_language" defaultValue="en"><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="en">English</SelectItem><SelectItem value="es">Español</SelectItem></SelectContent></Select></div>
-                  <div className="space-y-2"><Label>{dictionary.builder.template}</Label><Select name="template_id" defaultValue="modern"><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="modern">{dictionary.templates.modern}</SelectItem><SelectItem value="classic">{dictionary.templates.classic}</SelectItem><SelectItem value="minimal">{dictionary.templates.minimal}</SelectItem></SelectContent></Select></div>
-                  <div className="space-y-2 md:col-span-3"><Label>{dictionary.builder.purpose}</Label><Input name="target_purpose" placeholder="Frontend internship, scholarship, research role..." /></div>
-                  <Button className="self-end">{dictionary.dashboard.create}</Button>
-                </form>
+                <CreateCvForm dictionary={dictionary} userId={user.id} />
               </CardContent>
             </Card>
 

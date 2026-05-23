@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { Copy, Loader2, Plus, Sparkles, Trash2, Upload } from "lucide-react";
+import { ArrowDown, ArrowUp, Copy, ImageOff, Loader2, Plus, Sparkles, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { CVPreview } from "@/components/cv/CVPreview";
 import { CVScorePanel } from "@/components/cv/CVScorePanel";
@@ -31,9 +31,9 @@ type TableName =
   | "certification_entries";
 
 const sectionConfig: Record<string, { table: TableName; key: keyof CVData; fields: string[] }> = {
-  education: { table: "education_entries", key: "education", fields: ["institution", "degree", "field_of_study", "location", "start_date", "end_date", "gpa", "coursework", "honors", "description"] },
-  experience: { table: "experience_entries", key: "experience", fields: ["role_title", "organization", "location", "work_mode", "start_date", "end_date", "responsibilities", "achievements", "tools_used", "metrics", "team_size", "leadership", "problem_solved", "impact"] },
-  projects: { table: "project_entries", key: "projects", fields: ["name", "short_description", "problem_solved", "technologies", "user_role", "features_built", "results", "impact", "github_url", "demo_url"] },
+  education: { table: "education_entries", key: "education", fields: ["institution", "degree", "field_of_study", "location", "start_date", "end_date", "current", "gpa", "coursework", "honors", "description"] },
+  experience: { table: "experience_entries", key: "experience", fields: ["role_title", "organization", "location", "work_mode", "start_date", "end_date", "current", "responsibilities", "achievements", "tools_used", "metrics", "team_size", "leadership", "problem_solved", "impact"] },
+  projects: { table: "project_entries", key: "projects", fields: ["name", "short_description", "problem_solved", "technologies", "user_role", "features_built", "results", "impact", "github_url", "demo_url", "active"] },
   achievements: { table: "achievement_entries", key: "achievements", fields: ["title", "organization", "date", "level", "placement", "participants", "selection_rate", "prize_amount", "description", "difficulty", "skills_demonstrated", "impact", "proof_url"] },
   skills: { table: "skill_entries", key: "skills", fields: ["name", "category", "level"] },
   languages: { table: "language_entries", key: "languages", fields: ["language", "proficiency", "certification"] },
@@ -41,9 +41,60 @@ const sectionConfig: Record<string, { table: TableName; key: keyof CVData; field
 };
 
 const longFields = new Set(["responsibilities", "achievements", "description", "impact", "features_built", "results", "problem_solved", "leadership", "difficulty"]);
+const booleanFields = new Set(["current", "active"]);
 
 function fieldLabel(field: string) {
   return field.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function localizedFieldLabel(field: string, dictionary: Dictionary) {
+  const formLabels: Record<string, string> = {
+    title: dictionary.forms.title,
+    organization: dictionary.forms.organization,
+    date: dictionary.forms.date,
+    level: dictionary.forms.level,
+    placement: dictionary.forms.placement,
+    participants: dictionary.forms.participants,
+    selection_rate: dictionary.forms.selectionRate,
+    prize_amount: dictionary.forms.prize,
+    description: dictionary.forms.description,
+    difficulty: dictionary.forms.difficulty,
+    skills_demonstrated: dictionary.forms.demonstrated,
+    impact: dictionary.forms.impact,
+    proof_url: dictionary.forms.proof,
+    role_title: dictionary.forms.role,
+    location: dictionary.forms.location,
+    start_date: dictionary.forms.start,
+    end_date: dictionary.forms.end,
+    current: dictionary.forms.current,
+    work_mode: dictionary.forms.mode,
+    responsibilities: dictionary.forms.responsibilities,
+    achievements: dictionary.forms.achievements,
+    tools_used: dictionary.forms.tools,
+    metrics: dictionary.forms.metrics,
+    team_size: dictionary.forms.team,
+    leadership: dictionary.forms.leadership,
+    problem_solved: dictionary.forms.problem,
+    name: dictionary.forms.project,
+    technologies: dictionary.forms.technologies,
+    features_built: dictionary.forms.features,
+    github_url: dictionary.forms.github,
+    demo_url: dictionary.forms.demo,
+    active: dictionary.forms.active,
+    institution: dictionary.forms.institution,
+    degree: dictionary.forms.degree,
+    field_of_study: dictionary.forms.field,
+    gpa: dictionary.forms.gpa,
+    coursework: dictionary.forms.coursework,
+    honors: dictionary.forms.honors,
+    category: dictionary.forms.category,
+    proficiency: dictionary.forms.proficiency,
+    certification: dictionary.forms.certification,
+    issuer: dictionary.forms.issuer,
+    credential_url: dictionary.forms.credential,
+  };
+
+  return formLabels[field] ?? fieldLabel(field);
 }
 
 export function BuilderClient({ initialData, dictionary, userId }: { initialData: CVData; dictionary: Dictionary; userId: string }) {
@@ -110,6 +161,16 @@ export function BuilderClient({ initialData, dictionary, userId }: { initialData
     toast(dictionary.common.saveSuccess);
   };
 
+  const removePhoto = async () => {
+    const avatarUrl = data.profile.avatar_url;
+    const path = avatarUrl?.split("/profile-photos/")[1];
+    if (path) await supabase.storage.from("profile-photos").remove([path]);
+    setData((current) => ({ ...current, profile: { ...current.profile, avatar_url: null }, cv: { ...current.cv, include_photo: false } }));
+    await supabase.from("profiles").update({ avatar_url: null }).eq("id", userId);
+    await supabase.from("cv_versions").update({ include_photo: false }).eq("id", data.cv.id).eq("user_id", userId);
+    toast(dictionary.common.saveSuccess);
+  };
+
   return (
     <main className="mx-auto grid w-full max-w-[1600px] gap-5 px-4 py-6 xl:grid-cols-[420px_1fr_340px]">
       <Toaster />
@@ -139,7 +200,10 @@ export function BuilderClient({ initialData, dictionary, userId }: { initialData
               <div key={field} className="space-y-1"><Label>{fieldLabel(field)}</Label><Input value={String(data.profile[field as keyof typeof data.profile] || "")} onChange={(event) => setData((current) => ({ ...current, profile: { ...current.profile, [field]: event.target.value } }))} /></div>
             ))}
             <Label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed p-4 text-sm"><Upload className="size-4" />{dictionary.builder.photo}<Input className="hidden" type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => uploadPhoto(event.target.files?.[0])} /></Label>
-            <Button variant="outline" onClick={saveProfile}>{dictionary.builder.save}</Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={saveProfile}>{dictionary.builder.save}</Button>
+              <Button variant="outline" onClick={removePhoto}><ImageOff className="size-4" />Remove photo</Button>
+            </div>
           </CardContent>
         </Card>
       </section>
@@ -202,6 +266,43 @@ function SectionEditor({ data, setData, userId, cvId, dictionary, section, confi
     setData((current) => ({ ...current, [config.key]: ((current[config.key] as Entry[]) ?? []).filter((item) => item.id !== entry.id) }));
   };
 
+  const moveEntry = async (index: number, direction: -1 | 1) => {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= entries.length) return;
+
+    const nextEntries = [...entries];
+    [nextEntries[index], nextEntries[targetIndex]] = [nextEntries[targetIndex], nextEntries[index]];
+    const orderedEntries = nextEntries.map((entry, sortOrder) => ({ ...entry, sort_order: sortOrder }));
+    setData((current) => ({ ...current, [config.key]: orderedEntries }));
+    await Promise.all(orderedEntries.map((entry) => entry.id ? supabase.from(config.table).update({ sort_order: entry.sort_order }).eq("id", entry.id).eq("user_id", userId) : Promise.resolve()));
+  };
+
+  const optimizeEntry = async (entry: Entry, index: number) => {
+    const seedText = String(entry.achievements || entry.description || entry.responsibilities || entry.results || entry.impact || "");
+    if (!seedText.trim()) {
+      toast("Add raw details first, then optimize.");
+      return;
+    }
+
+    const response = await fetch("/api/optimize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: section === "achievements" ? "achievement" : section === "projects" ? "project" : "bullet", text: seedText, data: entry }),
+    });
+    const json = await response.json();
+    const content = String(json.content || "").trim();
+    if (!content) return;
+
+    if (section === "achievements") {
+      updateEntry(index, { generated_bullet: content });
+      await saveEntry({ ...entry, generated_bullet: content });
+      return;
+    }
+
+    updateEntry(index, { generated_bullets: [content] });
+    await saveEntry({ ...entry, generated_bullets: [content] });
+  };
+
   return (
     <Card className="border-white/70 bg-white/85 shadow-xl">
       <CardHeader className="flex-row items-center justify-between"><CardTitle className="text-base">{dictionary.sections[section as keyof typeof dictionary.sections]}</CardTitle><Button size="sm" onClick={addEntry}><Plus className="size-4" />{dictionary.builder.add}</Button></CardHeader>
@@ -215,8 +316,18 @@ function SectionEditor({ data, setData, userId, cvId, dictionary, section, confi
             <div className="space-y-3">
               {config.fields.map((field) => (
                 <div key={field} className="space-y-1">
-                  <Label>{fieldLabel(field)}</Label>
-                  {longFields.has(field) ? (
+                  <Label>{localizedFieldLabel(field, dictionary)}</Label>
+                  {booleanFields.has(field) ? (
+                    <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3"><span className="text-sm text-muted-foreground">{localizedFieldLabel(field, dictionary)}</span><Switch checked={Boolean(entry[field])} onCheckedChange={(checked) => updateEntry(index, { [field]: checked })} /></div>
+                  ) : field === "category" ? (
+                    <Select value={String(entry[field] ?? "")} onValueChange={(value) => updateEntry(index, { [field]: value ?? "" })}><SelectTrigger><SelectValue placeholder={localizedFieldLabel(field, dictionary)} /></SelectTrigger><SelectContent>{["Technical", "Soft", "Tool", "Programming language", "Design", "Business", "Other"].map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select>
+                  ) : field === "level" && section === "achievements" ? (
+                    <Select value={String(entry[field] ?? "")} onValueChange={(value) => updateEntry(index, { [field]: value ?? "" })}><SelectTrigger><SelectValue placeholder={localizedFieldLabel(field, dictionary)} /></SelectTrigger><SelectContent>{["School", "Local", "State", "National", "International"].map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select>
+                  ) : field === "level" ? (
+                    <Select value={String(entry[field] ?? "")} onValueChange={(value) => updateEntry(index, { [field]: value ?? "" })}><SelectTrigger><SelectValue placeholder={localizedFieldLabel(field, dictionary)} /></SelectTrigger><SelectContent>{["Beginner", "Intermediate", "Advanced", "Expert"].map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select>
+                  ) : field === "work_mode" ? (
+                    <Select value={String(entry[field] ?? "")} onValueChange={(value) => updateEntry(index, { [field]: value ?? "" })}><SelectTrigger><SelectValue placeholder={localizedFieldLabel(field, dictionary)} /></SelectTrigger><SelectContent>{["Remote", "Hybrid", "On-site"].map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent></Select>
+                  ) : longFields.has(field) ? (
                     <Textarea rows={3} value={String(entry[field] ?? "")} onChange={(event) => updateEntry(index, { [field]: event.target.value })} />
                   ) : (
                     <Input value={String(entry[field] ?? "")} onChange={(event) => updateEntry(index, { [field]: event.target.value })} />
@@ -227,6 +338,9 @@ function SectionEditor({ data, setData, userId, cvId, dictionary, section, confi
             <Separator className="my-3" />
             <div className="flex flex-wrap gap-2">
               <Button size="sm" onClick={() => saveEntry(entry)}>{dictionary.builder.save}</Button>
+              <Button size="sm" variant="outline" onClick={() => optimizeEntry(entry, index)}><Sparkles className="size-4" />{dictionary.builder.optimize}</Button>
+              <Button size="sm" variant="outline" onClick={() => moveEntry(index, -1)} disabled={index === 0}><ArrowUp className="size-4" /></Button>
+              <Button size="sm" variant="outline" onClick={() => moveEntry(index, 1)} disabled={index === entries.length - 1}><ArrowDown className="size-4" /></Button>
               <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(JSON.stringify(entry, null, 2))}><Copy className="size-4" />{dictionary.builder.copy}</Button>
               <Button size="sm" variant="destructive" onClick={() => deleteEntry(entry)}><Trash2 className="size-4" /></Button>
             </div>

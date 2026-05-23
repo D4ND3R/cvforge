@@ -126,3 +126,38 @@ export async function updateProfileAction(formData: FormData) {
   });
   revalidatePath("/", "layout");
 }
+
+export async function deleteAccountDataAction() {
+  const { user, supabase } = await requireUser();
+  await supabase.from("generated_sections").delete().eq("user_id", user.id);
+  await supabase.from("certification_entries").delete().eq("user_id", user.id);
+  await supabase.from("language_entries").delete().eq("user_id", user.id);
+  await supabase.from("skill_entries").delete().eq("user_id", user.id);
+  await supabase.from("achievement_entries").delete().eq("user_id", user.id);
+  await supabase.from("project_entries").delete().eq("user_id", user.id);
+  await supabase.from("experience_entries").delete().eq("user_id", user.id);
+  await supabase.from("education_entries").delete().eq("user_id", user.id);
+  await supabase.from("cv_versions").delete().eq("user_id", user.id);
+  await supabase.from("profiles").update({
+    full_name: null,
+    preferred_name: null,
+    professional_title: null,
+    city: null,
+    country: null,
+    phone: null,
+    linkedin_url: null,
+    github_url: null,
+    portfolio_url: null,
+    personal_website_url: null,
+    avatar_url: null,
+    target_market: null,
+    target_role: null,
+    onboarding_completed: false,
+  }).eq("id", user.id);
+  const { data: files } = await supabase.storage.from("profile-photos").list(user.id);
+  if (files?.length) {
+    await supabase.storage.from("profile-photos").remove(files.map((file) => `${user.id}/${file.name}`));
+  }
+  revalidatePath("/", "layout");
+  redirect("/onboarding");
+}

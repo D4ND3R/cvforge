@@ -5,6 +5,7 @@ create schema if not exists private;
 create or replace function private.set_updated_at()
 returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   new.updated_at = now();
@@ -193,13 +194,21 @@ create table if not exists public.generated_sections (
 
 create index if not exists cv_versions_user_id_idx on public.cv_versions(user_id);
 create index if not exists education_entries_user_cv_idx on public.education_entries(user_id, cv_id);
+create index if not exists education_entries_cv_id_idx on public.education_entries(cv_id);
 create index if not exists experience_entries_user_cv_idx on public.experience_entries(user_id, cv_id);
+create index if not exists experience_entries_cv_id_idx on public.experience_entries(cv_id);
 create index if not exists project_entries_user_cv_idx on public.project_entries(user_id, cv_id);
+create index if not exists project_entries_cv_id_idx on public.project_entries(cv_id);
 create index if not exists achievement_entries_user_cv_idx on public.achievement_entries(user_id, cv_id);
+create index if not exists achievement_entries_cv_id_idx on public.achievement_entries(cv_id);
 create index if not exists skill_entries_user_cv_idx on public.skill_entries(user_id, cv_id);
+create index if not exists skill_entries_cv_id_idx on public.skill_entries(cv_id);
 create index if not exists language_entries_user_cv_idx on public.language_entries(user_id, cv_id);
+create index if not exists language_entries_cv_id_idx on public.language_entries(cv_id);
 create index if not exists certification_entries_user_cv_idx on public.certification_entries(user_id, cv_id);
+create index if not exists certification_entries_cv_id_idx on public.certification_entries(cv_id);
 create index if not exists generated_sections_user_cv_idx on public.generated_sections(user_id, cv_id);
+create index if not exists generated_sections_cv_id_idx on public.generated_sections(cv_id);
 
 drop trigger if exists set_profiles_updated_at on public.profiles;
 create trigger set_profiles_updated_at before update on public.profiles
@@ -318,10 +327,6 @@ on conflict (id) do update set
   public = excluded.public,
   file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;
-
-create policy "Profile photos are readable" on storage.objects
-for select to authenticated
-using (bucket_id = 'profile-photos');
 
 create policy "Users can upload their profile photo" on storage.objects
 for insert to authenticated
