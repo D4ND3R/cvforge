@@ -80,7 +80,7 @@ export function OnboardingWizard({ dictionary, profile }: { dictionary: Dictiona
             {step < fields.length - 1 ? (
               <Button type="button" onClick={() => setStep((value) => Math.min(fields.length - 1, value + 1))}>{dictionary.onboarding.next}<ArrowRight className="size-4" /></Button>
             ) : (
-              <Button>{dictionary.onboarding.finish}</Button>
+              <Button type="submit">{dictionary.onboarding.finish}</Button>
             )}
           </div>
         </form>

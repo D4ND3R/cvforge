@@ -61,8 +61,8 @@ export default async function DashboardPage() {
                     <div className="flex flex-wrap gap-2">
                       <Button asChild size="sm"><Link href={`/builder/${cv.id}`}><Pencil className="size-4" />{dictionary.dashboard.edit}</Link></Button>
                       <Button asChild size="sm" variant="outline"><Link href={`/builder/${cv.id}/preview`}>{dictionary.dashboard.preview}</Link></Button>
-                      <form action={duplicateCvAction}><input type="hidden" name="id" value={cv.id} /><Button size="sm" variant="outline"><Copy className="size-4" />{dictionary.dashboard.duplicate}</Button></form>
-                      <form action={deleteCvAction}><input type="hidden" name="id" value={cv.id} /><Button size="sm" variant="destructive"><Trash2 className="size-4" />{dictionary.dashboard.delete}</Button></form>
+                      <form action={duplicateCvAction}><input type="hidden" name="id" value={cv.id} /><Button type="submit" size="sm" variant="outline"><Copy className="size-4" />{dictionary.dashboard.duplicate}</Button></form>
+                      <form action={deleteCvAction}><input type="hidden" name="id" value={cv.id} /><Button type="submit" size="sm" variant="destructive"><Trash2 className="size-4" />{dictionary.dashboard.delete}</Button></form>
                     </div>
                   </CardContent>
                 </Card>

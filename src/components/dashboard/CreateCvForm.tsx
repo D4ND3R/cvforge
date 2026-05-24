@@ -77,7 +77,7 @@ export function CreateCvForm({ dictionary, userId }: { dictionary: Dictionary; u
         <Label>{dictionary.builder.purpose}</Label>
         <Input {...form.register("target_purpose")} placeholder="Frontend internship, scholarship, research role..." />
       </div>
-      <Button className="self-end" disabled={form.formState.isSubmitting}>{dictionary.dashboard.create}</Button>
+      <Button type="submit" className="self-end" disabled={form.formState.isSubmitting}>{dictionary.dashboard.create}</Button>
     </form>
   );
 }

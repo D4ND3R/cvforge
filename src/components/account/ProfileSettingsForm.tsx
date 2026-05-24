@@ -31,7 +31,7 @@ export function ProfileSettingsForm({ profile, dictionary }: { profile: Record<s
               <SelectContent><SelectItem value="en">English</SelectItem><SelectItem value="es">Español</SelectItem></SelectContent>
             </Select>
           </div>
-          <div className="md:col-span-2"><Button>{dictionary.builder.save}</Button></div>
+          <div className="md:col-span-2"><Button type="submit">{dictionary.builder.save}</Button></div>
         </form>
       </CardContent>
     </Card>

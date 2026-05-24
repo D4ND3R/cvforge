@@ -1,17 +1,16 @@
 import Link from "next/link";
-import { FileText, Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
+import { CVForgeLogoMark } from "@/components/shared/CVForgeLogo";
 import { signOutAction } from "@/lib/actions/auth";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 export function Brand() {
   return (
     <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-      <span className="grid size-9 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-blue-500/20">
-        <FileText className="size-4" />
-      </span>
+      <CVForgeLogoMark />
       <span>CVForge</span>
     </Link>
   );
@@ -32,7 +31,7 @@ export function PublicNav({ dictionary }: { dictionary: Dictionary }) {
         <div className="flex items-center gap-1 md:hidden">
           <LanguageSwitcher />
           <Sheet>
-            <SheetTrigger asChild><Button variant="ghost" size="icon"><Menu className="size-5" /></Button></SheetTrigger>
+            <SheetTrigger className={buttonVariants({ variant: "ghost", size: "icon" })} aria-label="Open menu"><Menu className="size-5" /></SheetTrigger>
             <SheetContent>
               <div className="mt-8 grid gap-3">
                 <Link href="/demo">{dictionary.nav.demo}</Link>
@@ -63,16 +62,16 @@ export function AppNav({ dictionary }: { dictionary: Dictionary }) {
             <Button key={href} variant="ghost" asChild><Link href={href}>{label}</Link></Button>
           ))}
           <LanguageSwitcher />
-          <form action={signOutAction}><Button variant="outline">{dictionary.nav.logout}</Button></form>
+          <form action={signOutAction}><Button type="submit" variant="outline">{dictionary.nav.logout}</Button></form>
         </nav>
         <div className="flex items-center gap-1 md:hidden">
           <LanguageSwitcher />
           <Sheet>
-            <SheetTrigger asChild><Button variant="ghost" size="icon"><Menu className="size-5" /></Button></SheetTrigger>
+            <SheetTrigger className={buttonVariants({ variant: "ghost", size: "icon" })} aria-label="Open menu"><Menu className="size-5" /></SheetTrigger>
             <SheetContent>
               <div className="mt-8 grid gap-3">
                 {links.map(([href, label]) => <Link key={href} href={href}>{label}</Link>)}
-                <form action={signOutAction}><Button variant="outline">{dictionary.nav.logout}</Button></form>
+                <form action={signOutAction}><Button type="submit" variant="outline">{dictionary.nav.logout}</Button></form>
               </div>
             </SheetContent>
           </Sheet>

@@ -8,9 +8,9 @@ export function PDFExportButton({ dictionary }: { dictionary: Dictionary }) {
   const print = () => window.print();
 
   return (
-    <div className="flex gap-2">
-      <Button onClick={print} className="gap-2"><Download className="size-4" />{dictionary.builder.export}</Button>
-      <Button onClick={print} variant="outline" className="gap-2"><Printer className="size-4" />{dictionary.builder.print}</Button>
+    <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+      <Button type="button" onClick={print} className="w-full gap-2 sm:w-auto"><Download className="size-4" />{dictionary.builder.export}</Button>
+      <Button type="button" onClick={print} variant="outline" className="w-full gap-2 sm:w-auto"><Printer className="size-4" />{dictionary.builder.print}</Button>
     </div>
   );
 }

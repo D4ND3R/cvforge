@@ -47,6 +47,7 @@ function Button({
   size = "default",
   asChild,
   children,
+  type,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants> & { asChild?: boolean }) {
   if (asChild && isValidElement<{ className?: string }>(children)) {
@@ -58,6 +59,7 @@ function Button({
   return (
     <ButtonPrimitive
       data-slot="button"
+      type={type ?? "button"}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >

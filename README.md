@@ -12,6 +12,7 @@ Supabase project: `CVForge`
 
 - Email/password authentication with Supabase SSR cookies and protected routes.
 - Public landing page, demo, login, signup, auth callback, dashboard, onboarding, builder, preview, settings, and account pages.
+- Interactive public demo that updates score, template, language, metrics, and CV preview live.
 - Deep onboarding questionnaire with progress, mobile-friendly steps, and a first CV version created on completion.
 - CV builder for contact info, education, experience, projects, achievements, skills, languages, certifications, template choice, target purpose, tone, output language, optional photo, live preview, and section inclusion toggles.
 - Three templates: Modern, Classic, and Minimal.
@@ -42,6 +43,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4.1-mini
 NEXT_PUBLIC_APP_URL=
+NEXT_PUBLIC_ENABLE_GOOGLE_OAUTH=false
 ```
 
 Only `NEXT_PUBLIC_*` values are exposed to the browser. Keep `OPENAI_API_KEY` server-side only.
@@ -51,7 +53,7 @@ Only `NEXT_PUBLIC_*` values are exposed to the browser. Keep `OPENAI_API_KEY` se
 1. Create or select a Supabase project.
 2. Run all SQL files in `supabase/migrations` in filename order using the SQL editor or Supabase CLI.
 3. Enable Email/Password auth in Supabase Auth.
-4. Optional Google OAuth: configure the Google provider and set the callback URL to `<APP_URL>/auth/callback`.
+4. Optional Google OAuth: configure the Google provider, set the callback URL to `<APP_URL>/auth/callback`, and set `NEXT_PUBLIC_ENABLE_GOOGLE_OAUTH=true`.
 5. Confirm the `profile-photos` storage bucket exists after running the migration.
 
 The migration creates:
@@ -95,6 +97,7 @@ The Vercel production project has the Supabase public URL, publishable key, and 
 - AI optimization uses OpenAI chat completions when `OPENAI_API_KEY` exists; otherwise deterministic rewriting is used.
 - Section reordering uses up/down controls instead of drag-and-drop.
 - Supabase email confirmation is controlled in the Supabase dashboard; if confirmations are enabled, users must confirm email before login.
+- Google OAuth stays disabled in the UI until the Supabase Google provider and `NEXT_PUBLIC_ENABLE_GOOGLE_OAUTH=true` are configured.
 - Supabase currently reports leaked-password protection as disabled; enable it in the Auth dashboard for stronger production security.
 
 ## Future Improvements

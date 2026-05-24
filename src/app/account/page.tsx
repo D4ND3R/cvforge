@@ -21,7 +21,7 @@ export default async function AccountPage() {
           <CardHeader><CardTitle>{dictionary.nav.account}</CardTitle></CardHeader>
           <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <span>{user.email}</span>
-            <form action={signOutAction}><Button variant="outline">{dictionary.nav.logout}</Button></form>
+            <form action={signOutAction}><Button type="submit" variant="outline">{dictionary.nav.logout}</Button></form>
           </CardContent>
         </Card>
         <ProfileSettingsForm profile={profile ?? { email: user.email }} dictionary={dictionary} />
@@ -29,7 +29,7 @@ export default async function AccountPage() {
           <CardHeader><CardTitle>Delete account data</CardTitle></CardHeader>
           <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <span>Remove CVs, generated sections, profile details, and profile photos. Auth user deletion must be completed in Supabase.</span>
-            <form action={deleteAccountDataAction}><Button variant="destructive">Delete my data</Button></form>
+            <form action={deleteAccountDataAction}><Button type="submit" variant="destructive">Delete my data</Button></form>
           </CardContent>
         </Card>
       </main>
